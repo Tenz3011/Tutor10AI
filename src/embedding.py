@@ -9,6 +9,7 @@ from fastapi import FastAPI
 load_dotenv()
 app = FastAPI()
 
+@staticmethod
 def get_store(collection: str) -> PGVector:
     """Returns the PGVector Store"""
     embeddings = OpenAIEmbeddings(model=os.getenv("EMBEDDING_MODEL")) # type: ignore
