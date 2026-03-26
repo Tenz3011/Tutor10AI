@@ -1,5 +1,4 @@
-from embedding import Embedder
+from app import app
 
-embedder = Embedder()
-
-embedder.embed()
+if __name__ == "__main__":
+    app()

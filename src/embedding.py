@@ -9,7 +9,6 @@ from fastapi import FastAPI
 load_dotenv()
 app = FastAPI()
 
-@staticmethod
 def get_store(collection: str) -> PGVector:
     """Returns the PGVector Store"""
     embeddings = OpenAIEmbeddings(model=os.getenv("EMBEDDING_MODEL")) # type: ignore
@@ -21,21 +20,21 @@ def get_store(collection: str) -> PGVector:
     )
     return vector_store
 
-class Embedder:
-    def embed(self):
-        loader = Loader()
-        docs = loader.content_to_doc()
-        store = get_store("files")
 
-        store.delete_collection()
+def embed():
+    loader = Loader()
+    docs = loader.content_to_doc()
+    store = get_store("files")
 
-        store = get_store("files") 
+    store.delete_collection()
 
-        text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, 
-        chunk_overlap=200,  
-        add_start_index=True,  
-        )
-        all_splits = text_splitter.split_documents(docs)
+    store = get_store("files") 
 
-        store.add_documents(documents=all_splits)
+    text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, 
+    chunk_overlap=200,  
+    add_start_index=True,  
+    )
+    all_splits = text_splitter.split_documents(docs)
+
+    store.add_documents(documents=all_splits)

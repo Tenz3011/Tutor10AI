@@ -1,4 +1,5 @@
 set -e
 
+docker compose up -d
 
-uv run ./src/main.py
+streamlit run ./src/main.py
