@@ -4,7 +4,7 @@ from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
 from embedding import get_store
 from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 load_dotenv()
 
 PROMPT = """Du bist ein KI-gestützter Lernassistent für Studierende. Deine Aufgabe ist es, Inhalte aus bereitgestellten Vorlesungsfolien (Kontext) verständlich, strukturiert und didaktisch sinnvoll zu erklären.
@@ -93,19 +93,18 @@ def agent_answer(state: State):
     context = state.get("context", "")
 
     messages = [
-        {"role": "system", "content": f"{PROMPT}\n\nKontext:\n{context}"},
-        {"role": "user", "content": last_message.content},
+        SystemMessage(content=f"{PROMPT}\n\nKontext:\n{context}"),
+        HumanMessage(content=last_message.content),
     ]
 
     reply = llm.invoke(messages)
 
     return {
         "messages": [
-            {
-                "role": "assistant",
-                "content": reply.content,
-                "sources": state.get("sources", []),
-            }
+            AIMessage(
+                content=reply.content,
+                additional_kwargs={"sources": state.get("sources", [])}
+            )
         ]
     }
 
