@@ -2,7 +2,7 @@ from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
-from loader import Loader
+from rag.loader import Loader
 import os
 from fastapi import FastAPI
 

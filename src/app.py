@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage
-from graph import graph  
-from embedding import embed
+from src.graph import graph  
+from rag.embedding import embed
 import os
 
 MAX_MESSAGES = 10
@@ -62,7 +62,7 @@ def app():
             "messages": all_messages
         }
 
-        result = graph.invoke(state)
+        result = graph.invoke(state) # type: ignore
 
         assistant_reply = result["messages"][-1].content
 
