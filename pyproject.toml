@@ -10,7 +10,9 @@ dependencies = [
     "langchain-openai>=1.1.9",
     "langchain-postgres>=0.0.16",
     "langchain-text-splitters>=1.1.1",
+    "langgraph>=1.0.8",
     "pypdf>=6.7.0",
     "python-dotenv>=1.2.1",
     "streamlit>=1.55.0",
+    "uvicorn>=0.42.0",
 ]

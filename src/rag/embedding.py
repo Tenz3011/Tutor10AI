@@ -1,13 +1,11 @@
-from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
-from rag.loader import Loader
+from src.rag.loader import Loader
+from langchain_postgres import PGVector
 import os
-from fastapi import FastAPI
-
 load_dotenv()
-app = FastAPI()
+
 
 def get_store(collection: str) -> PGVector:
     """Returns the PGVector Store"""

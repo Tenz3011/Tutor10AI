@@ -1,4 +1,4 @@
-from app import app
+from st import st_app
 
 if __name__ == "__main__":
-    app()
+    st_app()

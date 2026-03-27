@@ -2,10 +2,10 @@ from langgraph.graph import StateGraph, START, END
 from langchain.chat_models import init_chat_model
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
-from rag.embedding import get_store
+from src.rag.embedding import get_store
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from prompts import AGENT_PROMPT
+from src.prompts import AGENT_PROMPT
 import os
 load_dotenv()
 
@@ -40,13 +40,12 @@ def retriever(state: State):
 
 
 def agent_answer(state: State):
-    last_message = state["messages"][-1]
+    messages = state["messages"]
     context = state.get("context", "")
 
     messages = [
-        SystemMessage(content=f"{AGENT_PROMPT}\n\nKontext:\n{context}"),
-        HumanMessage(content=last_message.content),
-    ]
+        SystemMessage(content=f"{AGENT_PROMPT}\n\nKontext:\n{context}")
+    ] + messages
 
     reply = llm.invoke(messages)
 
