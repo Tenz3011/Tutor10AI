@@ -4,6 +4,8 @@ import os
 
 BASE_URL = "http://localhost:8000"
 
+CHAT_ENDPOINT=f"{BASE_URL}/agent_chat"
+
 MAX_MESSAGES = 10
 FILE_DIR = "files"
 os.makedirs(FILE_DIR, exist_ok=True)
@@ -46,27 +48,39 @@ def st_app():
             "content": user_input
         })
 
+        # response = requests.post(
+        #     CHAT_ENDPOINT,
+        #     json={"messages": st.session_state.messages[-10:]}
+        # )
         response = requests.post(
-            f"{BASE_URL}/chat",
-            json={"messages": st.session_state.messages[-10:]}
+            CHAT_ENDPOINT,
+            json={"query": user_input}
         )
 
-        assistant_reply = response.json()["response"]
+        print(response.json())
+        with st.chat_message("assistant"):
+            st.markdown(response.json()["response"]["messages"][-1]["content"][0]["text"])
 
+        # ------- graph_chat -------
+        
+        # with st.chat_message("assistant"):
+        #     st.markdown(assistant_reply)
+
+        #assistant_reply = response.json()["response"]
 
         # Show assistant reply
-        with st.chat_message("assistant"):
-            st.markdown(assistant_reply)
+        # with st.chat_message("assistant"):
+        #     st.markdown(assistant_reply)
     
             # if result.get("sources"):
             #     with st.expander("📚 Quellen"):
             #         for src in result["sources"]:
             #             st.write(f"- {src['name']} ({src['id']})")
 
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": assistant_reply
-        })
+        # st.session_state.messages.append({
+        #     "role": "assistant",
+        #     "content": assistant_reply
+        # })
 
     with st.sidebar:
         st.header("⚙️ Einstellungen")
