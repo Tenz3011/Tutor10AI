@@ -1,10 +1,12 @@
 import streamlit as st
 import requests
 import os
-
+import json
 BASE_URL = "http://localhost:8000"
 
-CHAT_ENDPOINT=f"{BASE_URL}/agent_chat"
+CHAT="graph"
+
+CHAT_ENDPOINT=f"{BASE_URL}/{CHAT}_chat"
 
 MAX_MESSAGES = 10
 FILE_DIR = "files"
@@ -36,10 +38,13 @@ def st_app():
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
+    if "submitted" not in st.session_state:
+        st.session_state.submitted = False
     # Input
     user_input = st.chat_input("Deine Frage...")
 
     if user_input:
+        st.session_state.submitted = True
         # Show user message
         st.chat_message("user").markdown(user_input)
 
@@ -48,42 +53,52 @@ def st_app():
             "content": user_input
         })
 
-        # response = requests.post(
-        #     CHAT_ENDPOINT,
-        #     json={"messages": st.session_state.messages[-10:]}
-        # )
-        response = requests.post(
-            CHAT_ENDPOINT,
-            json={"query": user_input}
-        )
 
-        print(response.json())
-        with st.chat_message("assistant"):
-            st.markdown(response.json()["response"]["messages"][-1]["content"][0]["text"])
-
-        # ------- graph_chat -------
         
-        # with st.chat_message("assistant"):
-        #     st.markdown(assistant_reply)
+        # ============= agent_chat =============
+        if CHAT=="agent":
+            response = requests.post(
+                CHAT_ENDPOINT,
+                json={"query": user_input}
+            )
 
-        #assistant_reply = response.json()["response"]
+            assistant_reply = response.json()["response"]["messages"][-1]["content"][0]["text"]
+        
+            file_name = "./agent_output.json"
 
+            with open(file_name, "w", encoding="utf-8") as f:
+                json.dump(response.json(), f, ensure_ascii=False, indent=2)
+
+        # ============= graph_chat =============
+
+        elif CHAT=="graph":
+            response = requests.post(
+                CHAT_ENDPOINT,
+                json={"messages": st.session_state.messages[-10:]}
+            )
+            data = response.json() 
+            assistant_reply = data["response"]
+            sources = data.get("sources", [])
+
+
+
+        st.session_state.submitted = False 
         # Show assistant reply
-        # with st.chat_message("assistant"):
-        #     st.markdown(assistant_reply)
+        with st.chat_message("assistant"):
+            st.markdown(assistant_reply)
     
-            # if result.get("sources"):
-            #     with st.expander("📚 Quellen"):
-            #         for src in result["sources"]:
-            #             st.write(f"- {src['name']} ({src['id']})")
+            if sources:
+                with st.expander("📄 Sources"):
+                    for src in sources:
+                        st.write(f"- **{src['file_name']}** (Seite {src['page']})")
 
-        # st.session_state.messages.append({
-        #     "role": "assistant",
-        #     "content": assistant_reply
-        # })
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": assistant_reply
+        })
 
     with st.sidebar:
-        st.header("⚙️ Einstellungen")
+        st.header("⚙️ Settings")
         
         if "file_manager" not in st.session_state:
             st.session_state.file_manager = False
@@ -92,34 +107,55 @@ def st_app():
 
         if st.session_state.file_manager:
             file = st.file_uploader(
-                "PDF hochladen",
+                "Upload PDF",
             )
             if file:
                 path = os.path.join(FILE_DIR, file.name)
                 if os.path.exists(path):
-                    st.warning("⚠️ Datei existiert bereits!")
+                    st.warning("⚠️ File already exists!")
                 else:
                     save_uploaded_file(file)
-                    st.success(f"{file.name} gespeichert!")
+                    st.success(f"{file.name} saved!")
                     st.rerun()
             
             all_files = list_files()
 
             if all_files:
-                selected_file = st.selectbox("📄 PDFs auswählen", all_files)
-                if st.button("❌ Löschen"):
+                selected_file = st.selectbox("📄 Select PDF", all_files)
+                if st.button("❌ Delete"):
                     delete_file(selected_file)
-                    st.warning(f"{selected_file} gelöscht!")
+                    st.warning(f"{selected_file} deleted!")
                     st.rerun()
             else:
-                st.info("Keine Dateien vorhanden")
+                st.info("No files")
 
                 
         st.divider()
 
 
         if st.button("📥 Embedding"):
-            with st.spinner("Embedding läuft..."):
+            with st.spinner("downloading..."):
                 requests.post(f"{BASE_URL}/embed")
 
-            st.success("✅ Erfolgreich eingebettet!")
+            st.success("✅ files downloaded")
+
+
+def extract_text(response):
+    messages = response.get("messages", [])
+
+    # iterate from the end to find the last AI message with text
+    for msg in reversed(messages):
+        if hasattr(msg, "content"):
+            content = msg.content
+
+            if isinstance(content, list):
+                texts = [
+                    part.get("text", "")
+                    for part in content
+                    if isinstance(part, dict) and part.get("type") == "text"
+                ]
+                if texts:
+                    return " ".join(texts)
+
+            elif isinstance(content, str):
+                return content

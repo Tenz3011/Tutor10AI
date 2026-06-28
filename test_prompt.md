@@ -1,0 +1,1 @@
+schreibe mir einen Bericht über den Bloom filter. Vergleich den Algorithmus danach mit dem Cuckoo Filter.

@@ -5,11 +5,12 @@ from src.graph import graph
 from src.agent import agent
 from langchain_core.messages import HumanMessage, AIMessage
 import asyncio
-
+from fastapi.responses import FileResponse
 app = FastAPI()
 
 class ChatRequest(BaseModel):
     messages: list[dict]
+
 class QueryRequest(BaseModel):
     query: str
 
@@ -32,15 +33,12 @@ def to_lc_messages(messages):
 async def chat(req: ChatRequest):
     messages = req.messages
     lc_messages = to_lc_messages(messages)
-    print(lc_messages)
     state = {"messages": lc_messages}
-    print(state)
 
     result = await asyncio.to_thread(graph.invoke, state) # type: ignore
     assistant_reply = result["messages"][-1].content
-    print(f"REPLY: {assistant_reply}")
-
-    return {"response": assistant_reply}
+    sources = result["messages"][-1].additional_kwargs.get("sources", [])
+    return {"response": assistant_reply, "sources": sources}
 
 
 
@@ -49,8 +47,9 @@ async def agent_chat(req: QueryRequest):
     try:
         result = await asyncio.to_thread(
             agent.invoke,
-            {"messages": [{"role": "user", "content": req.query}]}
+            {"messages": [{"role": "user", "content": req.query}]},
         )
+
 
         # Depending on deepagents output structure
         if isinstance(result, dict):
@@ -62,3 +61,4 @@ async def agent_chat(req: QueryRequest):
 
     except Exception as e:
         return {"error": str(e)}
+  

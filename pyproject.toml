@@ -5,12 +5,14 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "crewai[tools]>=1.6.1",
     "deepagents>=0.5.2",
     "fastapi>=0.135.1",
     "langchain>=1.2.10",
     "langchain-openai>=1.1.9",
     "langchain-postgres>=0.0.16",
     "langchain-text-splitters>=1.1.1",
+    "langdetect>=1.0.9",
     "langgraph>=1.0.8",
     "pypdf>=6.7.0",
     "python-dotenv>=1.2.1",

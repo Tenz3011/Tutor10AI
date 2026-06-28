@@ -1,6 +1,6 @@
 set -e
 
-docker compose up -d
+podman compose up -d
 
 uvicorn src.app:app --host 0.0.0.0 --port 8000 &
 

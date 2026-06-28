@@ -33,16 +33,23 @@ class Loader:
 
     def content_to_doc(self) -> list[Document]:
         docs = []
+
         for pdf_file in self.materials.glob("*.pdf"):
             reader = PdfReader(pdf_file)
-            name = pdf_file.name
-            stem = pdf_file.stem
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text() or ""
-            
-            text = self.clean_text(text)
 
-            docs.append(Document(page_content=text,metadata={"file_name":name, "stem":stem}))
-        
+            for page_num, page in enumerate(reader.pages, start=1):
+                text = page.extract_text() or ""
+                text = self.clean_text(text)
+
+                docs.append(
+                    Document(
+                        page_content=text,
+                        metadata={
+                            "file_name": pdf_file.name,
+                            "stem": pdf_file.stem,
+                            "page": page_num,
+                        },
+                    )
+                )
+
         return docs
