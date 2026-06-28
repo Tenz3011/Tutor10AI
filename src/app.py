@@ -5,7 +5,6 @@ from src.graph import graph
 from src.agent import agent
 from langchain_core.messages import HumanMessage, AIMessage
 import asyncio
-from fastapi.responses import FileResponse
 app = FastAPI()
 
 class ChatRequest(BaseModel):

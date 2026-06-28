@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import os
 import json
+import re
+
 BASE_URL = "http://localhost:8000"
 
 CHAT="graph"
@@ -34,9 +36,10 @@ def st_app():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # Display full conversation
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+            st.markdown(convert_latex_delimiters(msg["content"]))
 
     if "submitted" not in st.session_state:
         st.session_state.submitted = False
@@ -46,7 +49,7 @@ def st_app():
     if user_input:
         st.session_state.submitted = True
         # Show user message
-        st.chat_message("user").markdown(user_input)
+        st.chat_message("user").markdown(convert_latex_delimiters(user_input))
 
         st.session_state.messages.append({
             "role": "user",
@@ -85,7 +88,7 @@ def st_app():
         st.session_state.submitted = False 
         # Show assistant reply
         with st.chat_message("assistant"):
-            st.markdown(assistant_reply)
+            st.markdown(convert_latex_delimiters(assistant_reply))
     
             if sources:
                 with st.expander("📄 Sources"):
@@ -138,8 +141,10 @@ def st_app():
                 requests.post(f"{BASE_URL}/embed")
 
             st.success("✅ files downloaded")
-
-
+            
+# ========================
+# HELPERS
+# ========================
 def extract_text(response):
     messages = response.get("messages", [])
 
@@ -159,3 +164,9 @@ def extract_text(response):
 
             elif isinstance(content, str):
                 return content
+        
+
+def convert_latex_delimiters(text: str) -> str:
+    text = re.sub(r'\\\[(.+?)\\\]', r'$$\1$$', text, flags=re.DOTALL)
+    text = re.sub(r'\\\((.+?)\\\)', r'$\1$', text, flags=re.DOTALL)
+    return text

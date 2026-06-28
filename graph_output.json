@@ -1,39 +1,30 @@
 ### Brief Explanation
-Maximum flows refer to the largest possible flow that can be sent from a source to a sink in a flow network, respecting the capacities of the edges. It involves finding an optimal distribution of flow through a network, ensuring that the total flow out of the source equals the total flow into the sink while not exceeding the capacity of any edge.
+Maximale Flüsse in einem Flussnetzwerk beziehen sich auf die maximale Menge an Fluss, die von einer Quelle zu einer Senke fließen kann, unter Berücksichtigung der Kapazitäten der Verbindungen zwischen den Knoten. Das Ziel ist, einen Fluss zu finden, der diesen maximalen Wert erreicht.
 
 ### Detailed Explanation
-A flow network is a directed graph where each edge has a certain capacity, which is the maximum amount of flow it can handle. The goal in a maximum flow problem is to find the flow from a designated source (q) to a sink (s) that is maximized under the following constraints:
 
-1. **Capacity Condition**: The flow on each edge must not exceed its capacity, represented mathematically as \( f(a) \leq \kappa(a) \) for every edge \( a \).
-   
-2. **Flow Conservation**: For all nodes in the network (except the source and sink), the amount of flow going into the node must equal the amount of flow going out. For a node \( v \), this means:
-   \[
-   \sum_{a \in A^-(v)} f(a) = \sum_{a \in A^+(v)} f(a)
-   \]
-   where \( A^-(v) \) represents all incoming edges to \( v \) and \( A^+(v) \) all outgoing edges.
+1. **Flussnetzwerk**: Ein Flussnetzwerk besteht aus Knoten (eine Quelle und eine Senke) und Kanten, die die Verbindungen zwischen diesen Knoten bilden. Jede Kante hat eine bestimmte Kapazität, die maximalen Fluss angibt, der durch diese Kante fließen kann.
 
-The maximum flow is the highest value of flow \( w(f) \) we can achieve, calculated as:
-\[
-w(f) = \sum_{a \in A_{\text{out}}(q)} f(a) - \sum_{a \in A_{\text{in}}(q)} f(a)
-\]
-where \( A_{\text{out}}(q) \) and \( A_{\text{in}}(q) \) refer to the outgoing and incoming edges from \( q \), respectively.
+2. **Maximaler Fluss**: Der maximale Fluss ist der größte mögliche Wert des Flusses, der von der Quelle zur Senke transportiert werden kann. Dies wird mathematisch als \( w(f) \) (die Gewichtung des Flusses) bezeichnet und das Ziel ist es, \( w(f^*) = \max f \) zu finden, wobei \( f^* \) der maximale Fluss ist.
+
+3. **Problemstellung**: Man fragt sich, wie wir einen Fluss \( f^* \) bestimmen können, der diese maximale Gewichtung erreicht. Hier kommen Algorithmen wie der Ford-Fulkerson-Algorithmus ins Spiel, der systematische Erhöhungen des Flusses anwendet, um den maximalen Fluss zu finden.
+
+4. **Max-Flow-Min-Cut-Theorem**: Dies ist ein wichtiges Theorem in der Flussnetzwerktheorie, das besagt, dass die maximale Kapazität eines Flusses gleich der minimalen Schnittkapazität im Netzwerk ist. Ein „Schnitt“ trennt die Quelle von der Senke und die Kapazität des Schnitts ist die Summe der Kapazitäten der Kanten, die durch diesen Schnitt gehen.
 
 ### Example
-Imagine a water supply network where:
+Stell dir vor, du hast ein Wasserversorgungsnetzwerk:
 
-- Source \( q \) has pipes connected to two tanks.
-- Each pipe has a maximum capacity (e.g., Pipe 1 can carry 3 units, Pipe 2 can carry 5 units).
-- Tanks connect to a sink \( s \).
+- **Quelle (q)**: Ein Wasserwerk
+- **Senke (s)**: Ein Wasserspeicher
+- **Kanten mit Kapazitäten**: 
+  - Von q nach A: Kapazität 10 (maximale Flussmenge 10)
+  - Von q nach B: Kapazität 5
+  - Von A nach s: Kapazität 10
+  - Von B nach s: Kapazität 10
 
-To maximize the flow from the source to the sink:
-
-1. Start with no flow (0 units).
-2. Distribute flow through the pipes without exceeding individual capacities.
-3. Calculate the total flow at the sink, ensuring that the flow conservation rule is respected.
-
-If you send 3 units through Pipe 1 and 5 units through Pipe 2, the maximum flow to sink \( s \) would be \( 3 + 5 = 8 \) units.
+In diesem Fall könnte der maximale Fluss z.B. 15 betragen, wenn du 10 Einheiten von q nach A und 5 Einheiten von q nach B sendest.
 
 ### Summary
-In summary, the maximum flow problem involves determining the largest feasible flow from a source to a sink within the constraints of edge capacities and flow conservation principles. Understanding this helps in various applications, such as logistics and network design. 
+Maximale Flüsse sind ein zentrales Konzept in der Graphentheorie, das hilft, Flüsse durch Netzwerke optimal zu steuern. Das Max-Flow-Min-Cut-Theorem verbindet den maximalen Fluss mit der Kapazität von Schnitten im Netzwerk und ist grundlegend für das Verständnis der Flussoptimierung.
 
-Would you like to know more about a specific aspect of maximum flows, such as algorithms used to find them?
+Wenn du mehr über einen bestimmten Aspekt wissen möchtest oder Fragen hast, lass es mich wissen!
