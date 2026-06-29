@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import os
-import json
 import re
 
 BASE_URL = "http://localhost:8000"
@@ -56,33 +55,13 @@ def st_app():
             "content": user_input
         })
 
-
-        
-        # ============= agent_chat =============
-        if CHAT=="agent":
-            response = requests.post(
-                CHAT_ENDPOINT,
-                json={"query": user_input}
-            )
-
-            assistant_reply = response.json()["response"]["messages"][-1]["content"][0]["text"]
-        
-            file_name = "./agent_output.json"
-
-            with open(file_name, "w", encoding="utf-8") as f:
-                json.dump(response.json(), f, ensure_ascii=False, indent=2)
-
-        # ============= graph_chat =============
-
-        elif CHAT=="graph":
-            response = requests.post(
-                CHAT_ENDPOINT,
-                json={"messages": st.session_state.messages[-10:]}
-            )
-            data = response.json() 
-            assistant_reply = data["response"]
-            sources = data.get("sources", [])
-
+        response = requests.post(
+            CHAT_ENDPOINT,
+            json={"messages": st.session_state.messages[-10:]}
+        )
+        data = response.json() 
+        assistant_reply = data["response"]
+        sources = data.get("sources", [])
 
 
         st.session_state.submitted = False 
@@ -141,7 +120,7 @@ def st_app():
                 requests.post(f"{BASE_URL}/embed")
 
             st.success("✅ files downloaded")
-            
+
 # ========================
 # HELPERS
 # ========================

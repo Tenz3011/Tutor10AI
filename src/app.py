@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from src.rag.embedding import embed
 from pydantic import BaseModel
 from src.graph import graph
-from src.agent import agent
 from langchain_core.messages import HumanMessage, AIMessage
 import asyncio
 app = FastAPI()
@@ -39,25 +38,4 @@ async def chat(req: ChatRequest):
     sources = result["messages"][-1].additional_kwargs.get("sources", [])
     return {"response": assistant_reply, "sources": sources}
 
-
-
-@app.post("/agent_chat")
-async def agent_chat(req: QueryRequest):
-    try:
-        result = await asyncio.to_thread(
-            agent.invoke,
-            {"messages": [{"role": "user", "content": req.query}]},
-        )
-
-
-        # Depending on deepagents output structure
-        if isinstance(result, dict):
-            output = result.get("output", result)
-        else:
-            output = str(result)
-
-        return {"response": output}
-
-    except Exception as e:
-        return {"error": str(e)}
   
