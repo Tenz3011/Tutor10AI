@@ -12,7 +12,7 @@ load_dotenv()
 llm = init_chat_model(os.environ.get("CHAT_MODEL"))
 vector_store = get_store("files")
 
-SIMILARITY_THRESHOLD = 0.20
+SIMILARITY_THRESHOLD = 0.50
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -24,12 +24,13 @@ def retriever(state: State):
     """Fetches context from document store based on query"""
     last_message = state["messages"][-1]
 
-    retrieved_docs = vector_store.similarity_search_with_score(last_message.content, k=5)
+    retrieved_docs = vector_store.similarity_search_with_score(last_message.content, k=10)
 
     sources = []
     context_chunks = []
 
     for i, (doc,score) in enumerate(retrieved_docs):
+        print(score, doc.metadata)
         if score <= SIMILARITY_THRESHOLD:
             source_id = f"doc-{i+1}"
 
@@ -63,11 +64,10 @@ def router(state: State):
     return "no_context"
 
 def no_context(state: State):
-    last_messages = state["messages"]
 
     messages = [
         SystemMessage(content=NO_CONTEXT_PROMPT),
-    ] + last_messages
+    ] 
  
     reply = llm.invoke(messages)
     return {

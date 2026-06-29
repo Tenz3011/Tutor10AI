@@ -38,6 +38,4 @@ The user asked a question that cannot be answered from the available documents.
 Your task:
 - Tell the user that the information is not available in the provided documents.
 - Do NOT invent information.
-- Respond ONLY in the same language as the user's last message.
-- Never translate the user's language into English.
 """

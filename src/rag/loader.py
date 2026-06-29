@@ -3,6 +3,7 @@ from pypdf import PdfReader
 import re
 import unicodedata
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class Loader:
     def __init__(self):
@@ -37,11 +38,13 @@ class Loader:
         for pdf_file in self.materials.glob("*.pdf"):
             reader = PdfReader(pdf_file)
 
+            page_docs = []
+
             for page_num, page in enumerate(reader.pages, start=1):
                 text = page.extract_text() or ""
                 text = self.clean_text(text)
 
-                docs.append(
+                page_docs.append(
                     Document(
                         page_content=text,
                         metadata={
@@ -51,5 +54,11 @@ class Loader:
                         },
                     )
                 )
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=800,
+                chunk_overlap=150,
+            )
+
+            docs.extend(splitter.split_documents(page_docs))
 
         return docs
