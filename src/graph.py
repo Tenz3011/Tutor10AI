@@ -24,7 +24,7 @@ load_dotenv()
 llm = init_chat_model(os.environ.get("CHAT_MODEL"))
 vector_store = get_store("files")
 
-SIMILARITY_THRESHOLD = 0.50
+SIMILARITY_THRESHOLD = 0.45
 
 
 class State(TypedDict):

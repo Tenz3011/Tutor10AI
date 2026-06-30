@@ -36,7 +36,9 @@ def st_app():
     )
 
     st.title("🎓 RAG Tutor")
-    st.write("Stelle Fragen zu deinen Vorlesungsfolien oder lasse dir ein Quiz erstellen.")
+
+    header_text = "Stelle Fragen zu deinen Vorlesungsfolien oder lasse dir ein Quiz erstellen."
+    st.write(header_text)
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -120,7 +122,10 @@ def st_app():
     # -----------------------------
     # Chat Input
     # -----------------------------
-    user_input = st.chat_input("Deine Frage...")
+    if st.session_state.mode == "Quiz":
+        user_input = st.chat_input("Nenne ein Quiz Thema...")
+    else:
+        user_input = st.chat_input("Dein Frage...")
 
     if user_input:
 
@@ -129,7 +134,7 @@ def st_app():
         # Quizmodus
         if st.session_state.mode == "Quiz":
             user_input = (
-                "Erstelle ein Quiz ausschließlich anhand der Dokumente "
+                "Erstelle ein Quiz ausschließlich anhand der Dokumente"
                 f"zum folgenden Thema:\n\n{original_input}"
             )
 
