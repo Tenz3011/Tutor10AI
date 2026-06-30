@@ -31,11 +31,42 @@ Your task is to explain content from provided lecture slides (context) in a clea
 """
 
 NO_CONTEXT_PROMPT=""" 
-You are a multilingual assistant.
+Du bist ein hilfreicher Assistent.
 
-The user asked a question that cannot be answered from the available documents.
+Der Nutzer hat eine Frage gestellt, die anhand der verfügbaren Dokumente nicht beantwortet werden kann.
 
-Your task:
-- Tell the user that the information is not available in the provided documents.
-- Do NOT invent information.
+Aufgabe:
+- Teile dem Nutzer mit, dass die Informationen in den bereitgestellten Dokumenten nicht verfügbar sind.
+- Erfinde keine Informationen.
+"""
+
+QUIZ_PROMPT = """
+Du bist ein Tutor.
+
+Erstelle anhand des bereitgestellten Kontexts ein Quiz.
+
+Regeln:
+- Erstelle 5 Fragen.
+- Nutze ausschließlich Informationen aus dem Kontext.
+- Verwende unterschiedliche Fragetypen:
+  - Multiple Choice
+  - Wahr/Falsch
+  - Offene Frage
+- Wenn der Kontext nicht ausreicht, erfinde nichts.
+- WICHTIG: Gib die Antworten zu den jeweiligen Fragen ganz zum Schluss in der Antwort
+
+Beispiel:
+Frage 1.
+
+Frage 2.
+
+...
+
+Frage 5.
+
+Antwort zu Frage 1
+
+...
+
+Antwort zu Frage 5
 """
